@@ -83,12 +83,17 @@
     <ClCompile Include="CLocalSearch.cpp" />
     <ClCompile Include="CMultiStartAlgorithm.cpp" />
     <ClCompile Include="CNeighborhood.cpp" />
+    <ClCompile Include="CRestrictedNeighbor.cpp" />
+    <ClCompile Include="CSetOperator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CBuilderAlgorithm.h" />
     <ClInclude Include="CGTAlgorithm.h" />
     <ClInclude Include="CLocalSearch.h" />
     <ClInclude Include="CMultiStartAlgorithm.h" />
     <ClInclude Include="CNeighborhood.h" />
+    <ClInclude Include="CRestrictedNeighbor.h" />
+    <ClInclude Include="CSetOperator.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\Debug\jssp.model.lib" />

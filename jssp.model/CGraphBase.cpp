@@ -270,7 +270,7 @@ int CGraphBase::LeftOffSet(int pc_pos, unsigned *j_block, int *m_block, int j_co
 {
 	int result;
 	float tmpInit;
-	unsigned tmpId;
+	unsigned tmpId, tmpAtom;
 	bool j_found, m_found;
 	STRUCT_OPERATION tmpOp;
 	const CMachineGroupLite *tmpMGroup;
@@ -315,6 +315,7 @@ int CGraphBase::LeftOffSet(int pc_pos, unsigned *j_block, int *m_block, int j_co
 		tmpOp.RTime = TR[pc_pos - 1].RTime;
 		tmpInit = TR[pc_pos - 1].DTime;
 		tmpId = Sequence[pc_pos - 1];
+		tmpAtom = schedule.GetIdByIndex(pc_pos - 1);
 
 		TD[pc_pos - 1].ID = TD[pc_pos].ID;
 		TD[pc_pos - 1].MachineGroup = TD[pc_pos].MachineGroup;
@@ -322,6 +323,7 @@ int CGraphBase::LeftOffSet(int pc_pos, unsigned *j_block, int *m_block, int j_co
 		TR[pc_pos - 1].RTime = TR[pc_pos].RTime;
 		TR[pc_pos - 1].DTime = TR[pc_pos].DTime;
 		Sequence[pc_pos - 1] = Sequence[pc_pos];
+		schedule.SetIdByIndex(pc_pos - 1, TD[pc_pos].ID);
 
 		TD[pc_pos].ID = tmpOp.ID;
 		TD[pc_pos].MachineGroup = tmpMGroup;
@@ -329,6 +331,7 @@ int CGraphBase::LeftOffSet(int pc_pos, unsigned *j_block, int *m_block, int j_co
 		TR[pc_pos].RTime = tmpOp.RTime;
 		TR[pc_pos].DTime = tmpInit;
 		Sequence[pc_pos] = tmpId;
+		schedule.SetIdByIndex(pc_pos, tmpAtom);
 
 		// Que ingenioso!!!. Con esta solucion me quite de arriba la funcion <PosInSequence>
 		// que hacia una busqueda para ubicar la posicion de la pieza a saltar. 
@@ -444,6 +447,8 @@ void CGraphBase::SetNodeValue(int index, unsigned id, const CMachineGroupLite *m
 	{
 		TD[index].ID = id;
 		TD[index].MachineGroup = machines;
+
+		schedule.SetIdByIndex(index, id);
 	}
 }
 
@@ -456,6 +461,72 @@ void CGraphBase::SetProblemType(enum ProblemType type)
 }
 
 //----------------------------------------------------------------------------
+//	Establece el manipulador de la interfaz donde sera vizualizado el diagrama
+//	de Gantt.
+//----------------------------------------------------------------------------
+void CGraphBase::SetGantChartView(TObserverGantt *handler)
+{
+	hndGantt = handler;
+}
+
+//----------------------------------------------------------------------------
+//	Establece el manipulador de la interfaz donde sera vizualizado el grafico
+//	de Energia.
+//----------------------------------------------------------------------------
+void CGraphBase::SetEnergyChartView(TObserverEnergy *handler)
+{
+	hndEnergy = handler;
+}
+
+//----------------------------------------------------------------------------
+//	Devuelve la cantidad de piezas que contiene el grafo.
+//----------------------------------------------------------------------------
+int CGraphBase::GetPieceCount(void) const
+{
+	return iJobs;
+}
+
+//----------------------------------------------------------------------------
+//	Devuelve la cantidad de maquinas que contiene el grafo.
+//----------------------------------------------------------------------------
+int CGraphBase::GetMachineCount(void) const
+{
+	return iMachines;
+}
+
+//----------------------------------------------------------------------------
+//	Devuelve la secuencia que representa al grafo.
+//----------------------------------------------------------------------------
+const unsigned *CGraphBase::GetSequence(void) const
+{
+	return Sequence;
+}
+
+//----------------------------------------------------------------------------
+//	Devuelve el tipo de mejora para los objetivos
+//----------------------------------------------------------------------------
+enum ImproveType CGraphBase::GetImproveType(void) const
+{
+	return ImpType;
+}
+
+//----------------------------------------------------------------------------
+//	Devuelve el tipo de problema que representa el grafo.
+//----------------------------------------------------------------------------
+enum ProblemType CGraphBase::GetProblemType(void) const
+{
+	return ProbType;
+}
+
+//----------------------------------------------------------------------------
+//	Devuelve el schedule.
+//----------------------------------------------------------------------------
+const CSchedule &CGraphBase::GetSchedule(void) const
+{
+	return schedule;
+}
+
+//----------------------------------------------------------------------------
 //	Devuelve el tipo de schedule que representa el grafo.
 //----------------------------------------------------------------------------
 enum ScheduleType CGraphBase::SchedulePlannig(void)
@@ -465,7 +536,7 @@ enum ScheduleType CGraphBase::SchedulePlannig(void)
 	float TDPiActual, t_startBP, TPiAnt_Ant, TOPAnterior;
 
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	for (indexOpC = 1; indexOpC < (iJobs * iMachines + iRecirc); indexOpC++)
 	{
@@ -513,7 +584,7 @@ void CGraphBase::CreateGanttChart(void)
 	int j, op;
 
 	// Si todavia no se ha recorrido el grafo, se corre ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	hndGantt->PrintCmaxValue(Makespan());
 	hndGantt->PrintSchedule(SchedulePlannig());

@@ -11,11 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FDE96FD8-6264-4ED7-8A1E-68509E3E50D2}</ProjectGuid>
+    <ProjectGuid>{B8352C50-4060-4420-A74A-CAE30AF9FAC0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>jsspgraspmethod</RootNamespace>
+    <RootNamespace>jsspsannealingmethod</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
-    <ProjectName>galib.method</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -53,7 +52,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -79,18 +78,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gaModule.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="set-path-data.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\Debug\chm.utilities.lib" />
     <Library Include="..\Debug\jssp.model.lib" />
-    <Library Include="galib.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="gaModule.h" />
-    <ClInclude Include="set-path-data.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

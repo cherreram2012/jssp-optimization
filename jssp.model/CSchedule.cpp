@@ -1,3 +1,4 @@
+#include <cstring>
 #include "CSchedule.h"
 
 //----------------------------------------------------------------------------------
@@ -35,24 +36,16 @@ CSchedule::CSchedule (ScheduleLengthType type, int njobs, int nmachines, int nre
 //----------------------------------------------------------------------------------
 CSchedule::CSchedule(const CSchedule &obj)
 {
-	//int jobs, machines, recirc;
-
-	//obj.GetDimension(&jobs, &machines, &recirc);
-
 	iIndex = -1;
 	iJobs = obj.iJobs;
 	iMachines = obj.iMachines;
 	iRecirc = obj.iRecirc;
 	LengthType = obj.LengthType;
-	//iIndex = -1;
-	//iJobs = jobs;
-	//iMachines = machines;
-	//iRecirc = recirc;
-	//LengthType = obj.GetLengthType();
 	iSize = (LengthType == N_SCHEDULE) ? iJobs : iJobs * iMachines + iRecirc;
 
 	SequenceId = new unsigned[iSize];
-	for (int i = 0; i < iSize; i++) AddToSchedule(obj.GetIdByIndex(i));
+	//for (int i = 0; i < iSize; i++) AddToSchedule(obj.GetIdByIndex(i));
+	memcpy(this->SequenceId, obj.SequenceId, sizeof(unsigned int) * iSize);
 }
 
 //----------------------------------------------------------------------------------
@@ -99,6 +92,14 @@ void CSchedule::SetDimension(ScheduleLengthType type, int njobs, int nmachines, 
 	iSize = (type == N_SCHEDULE) ? iJobs : iJobs * iMachines + iRecirc;
 	if (SequenceId) delete []SequenceId;
 	SequenceId = new unsigned[iSize] {0};
+}
+
+//----------------------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------------------
+int CSchedule::GetSize(void) const
+{
+	return iSize;
 }
 
 //----------------------------------------------------------------------------------
@@ -200,32 +201,85 @@ bool CSchedule::IsComplete(void) const
 //----------------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------------
+bool CSchedule::IsValid (bool recirc) const
+{
+	unsigned int *counter = new unsigned int[iJobs + 1] {0};
+
+	// Nota: (04-06-2019) en el futuro usare/implementare funcionalidad con ese
+	// parametro
+	for (int i = 0; i < iSize; i++)
+	{
+		counter[SequenceId[i]]++;
+		if (counter[SequenceId[i]] > iMachines) return false;
+	}
+	delete[]counter;
+
+	return true;
+}
+
+//----------------------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------------------
+void CSchedule::ResectInsertionIndex(void)
+{
+	iIndex = -1;
+}
+
+//----------------------------------------------------------------------------------
+// 
+//----------------------------------------------------------------------------------
 void CSchedule::ClearSchedule (void)
 {
 	iIndex = -1;
 	for (unsigned i = 0; i < iSize; i++) SequenceId[i] = 0;
 }
 
+//----------------------------------------------------------------------------------
+// Sobrecarga del operador Igualdad (=).
+//----------------------------------------------------------------------------------
+bool CSchedule::operator == (const CSchedule &obj)
+{
+	int sizeL, sizeR;
+
+	sizeR = (obj.LengthType == N_SCHEDULE) ? obj.iJobs : obj.iJobs * obj.iMachines + obj.iRecirc;
+	sizeL = (this->LengthType == N_SCHEDULE) ? this->iJobs : this->iJobs * this->iMachines + this->iRecirc;
+	if (sizeL != sizeR) return false;
+
+	if (this->iJobs != obj.iJobs || this->iMachines != obj.iMachines || this->iRecirc != obj.iRecirc) return false;
+		
+	for (int i = 0; i < iSize; i++)
+		if (this->SequenceId[i] != obj.SequenceId[i]) return false;
+
+	return true;
+}
 
 //----------------------------------------------------------------------------------
 // Sobrecarga del operador Asignacion (=).
 //----------------------------------------------------------------------------------
 CSchedule &CSchedule::operator = (const CSchedule &obj)
 {
-	int jobs, machines, recirc;
+	int sizeL, sizeR;
 
-	obj.GetDimension(&jobs, &machines, &recirc);
+	sizeR = (obj.LengthType == N_SCHEDULE) ? obj.iJobs : obj.iJobs * obj.iMachines + obj.iRecirc;
+	sizeL = (this->LengthType == N_SCHEDULE) ? this->iJobs : this->iJobs * this->iMachines + this->iRecirc;
+
+	if (sizeL != sizeR)
+	{
+		iSize = sizeR;
+
+		if (SequenceId) delete[]SequenceId;
+		SequenceId = new unsigned[iSize];
+	}
 
 	iIndex = -1;
-	iJobs = jobs;
-	iMachines = machines;
-	iRecirc = recirc;
-	LengthType = obj.GetLengthType();
-	iSize = (LengthType == N_SCHEDULE) ? iJobs : iJobs * iMachines + iRecirc;
+	iSize = sizeR;
+	iJobs = obj.iJobs;
+	iMachines = obj.iMachines;
+	iRecirc = obj.iRecirc;
+	LengthType = obj.LengthType;
 
-	if (SequenceId) delete[]SequenceId;
-	SequenceId = new unsigned[iSize];
-	for (int i = 0; i < iSize; i++) AddToSchedule(obj.GetIdByIndex(i));
+	//for (int i = 0; i < iSize; i++) AddToSchedule(obj.GetIdByIndex(i));
+	memcpy(this->SequenceId, obj.SequenceId, sizeof(unsigned int) * iSize);
 
 	return (*this);
 }
@@ -245,7 +299,7 @@ std::ostream& operator << (std::ostream &stream, const CSchedule &obj)
 	}
 
 	size = (obj.GetLengthType() == N_SCHEDULE) ? jobs : jobs * machines + recirc;
-	for (unsigned i = 0; i < size; i++) stream << obj.GetIdByIndex(i) << "  ";
+	for (int i = 0; i < size; i++) stream << obj.GetIdByIndex(i) << "  ";
 	
 	return stream;
 }

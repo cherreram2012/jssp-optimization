@@ -18,8 +18,81 @@
     <ClCompile Include="main.cpp">
       <Filter>Sources files</Filter>
     </ClCompile>
+    <ClCompile Include="CTerminator.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CPathRelinking.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CEliteSet.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGrasp_PR.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGraspBasic.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGraspAbstract.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGrasp_EvPR.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRestarts.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CEvolutionaryPR.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGrasp_itEvPR.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGrasp_PR_Restarts.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\Debug\jssp.model.lib" />
+    <Library Include="..\Debug\chm.utilities.lib" />
+    <Library Include="..\Debug\jssp.heuristics.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CStatistics.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CTerminator.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CPathRelinking.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CEliteSet.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGrasp_PR.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGraspBasic.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGraspAbstract.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGrasp_EvPR.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRestarts.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CEvolutionaryPR.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGrasp_itEvPR.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGrasp_PR_Restarts.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,17 +3,18 @@
 #define CSPGraphBase_H
 
 #include <math.h>
+#include "CSchedule.h"
 #include "CMachineGroup.h"
 #include "CMachineCollection.h"
 
 #define  NULL 0
 #define  CeroReal 1E-3
 
-enum ProblemType { NonProblem = 0, PFSS, FSS, GFSS, HFSS, FFSS, JSS, HJSS, FJSS, OSS };
+enum ImproveType { itAtLeastOne, itAllAtSameTime };
 
 enum ScheduleType { stSemiActive = 1, stActive, stNonDelay };
 
-enum ImproveType { itAtLeastOne, itAllAtSameTime };
+enum ProblemType { NonProblem = 0, PFSS, FSS, GFSS, HFSS, FFSS, JSS, HJSS, FJSS, OSS };
 
 //--------------------------------------------------------------------------------------
 //	ClassName  : TObserverGantt
@@ -72,25 +73,27 @@ public:
 //--------------------------------------------------------------------------------------
 class CGraphBase {
 	protected:
-		/* Declaracion del NODO para el grafo */
+		/*** Declaracion del NODO para el grafo ***/
 		typedef struct {
 			unsigned ID;
 			const CMachineGroupLite *MachineGroup;
 		} STRUCT_NODE;
 
-		/* Declaracion de NODO para el subgrafo solucion */
+		/*** Declaracion de NODO para el subgrafo solucion ***/
 		typedef struct {
-			  int Machine;
 			float RTime;
 			float DTime;
+			  int Machine;
+				int prevJob;
+				int prevOp;
 		} STRUCT_NODE_RESULT;
 
-		/* Declaracion de un tipo OPERATION */
+		/*** Declaracion de un tipo OPERATION ***/
 		typedef struct {
 			unsigned ID;
-					 int Machine;
 				 float RTime;
 				 float DTime;
+					 int Machine;
 		} STRUCT_OPERATION;
 
 	protected:
@@ -100,23 +103,26 @@ class CGraphBase {
 		int	  iMachines;
 		int	  iRecirc;
 		int	  stepIBUIT;
-		bool  isGraphTravel;
+		bool  isGraphTraveled;
 
 		/* data member for IBUIT */
-		int			 *indexOpB;
-		int			 *m_block;
-		bool			ibuit_ok;
-		bool			applyIBUIT;
-		double    timeIBUIT;
+		int		*indexOpB;
+		int		*m_block;
+		bool	 ibuit_ok;
+		bool	 applyIBUIT;
+		double timeIBUIT;
 		unsigned *j_block;
 		unsigned *Sequence;
+		CSchedule schedule;
 	  unsigned long *Performance;
+		enum ImproveType ImpType;
 
 		/*  */
 		STRUCT_NODE				 *TD;		
 		STRUCT_NODE_RESULT *TR;		
 		enum ProblemType    ProbType;		
-		TObserverGantt		 *hndGantt;		
+		TObserverGantt		 *hndGantt;	
+		TObserverEnergy		 *hndEnergy;
 		const CMachineCollection *MachineList;
 
 	protected:
@@ -125,7 +131,7 @@ class CGraphBase {
 					 float getTimeBackOp	( int indexPi, unsigned id );
 					 float getTimeBackJob	( int indexPi, int machine, float *initTime = NULL );
 
-		//---	IBUIT Technique Functions  ---//
+		//---	Protected IBUIT Technique Functions  ---//
 		virtual bool IBUIT_Technique ( void );
 						 int getBackOpIndex  ( int indexPi, unsigned id, float *initTime = NULL );
 						 int getBackJobIndex ( int indexPi, int machine, float *initTime = NULL );
@@ -141,8 +147,18 @@ class CGraphBase {
 
 	public:
 		//--- Set Functions ---/
-		void SetNodeValue		( int index, unsigned id, const CMachineGroupLite *machines );
-		void SetProblemType ( enum ProblemType type );
+		void SetNodeValue				( int index, unsigned id, const CMachineGroupLite *machines );
+		void SetProblemType			( enum ProblemType type );
+		void SetGantChartView		( TObserverGantt *handler );
+		void SetEnergyChartView ( TObserverEnergy *handler );
+
+		//--- Get Functions ---//
+		int								GetPieceCount   ( void ) const;
+		int							  GetMachineCount ( void ) const;
+		const unsigned   *GetSequence     ( void ) const;
+		enum ImproveType  GetImproveType  ( void ) const;
+		enum ProblemType  GetProblemType  ( void ) const;
+		const CSchedule  &GetSchedule     ( void ) const;
 
 		//--- Objective Function ---//	
 		virtual float			Makespan				( void ) = 0;		// Objetivo Cmax

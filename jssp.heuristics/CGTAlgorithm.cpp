@@ -51,7 +51,7 @@ CGTAlgorithmBase::ATOM_SCHEDULE CGTAlgorithmBase::calculate__tCmin(ATOM_SCHEDULE
 	ATOM_SCHEDULE minor;
 	ATOM_SCHEDULE_LIST_PTR cptr = *C;
 
-	semiGreedy = (criteria == RANDOMIZED || criteria == SPT_RANDOMIZED || criteria == SEP_RANDOMIZED || criteria == ECT_RANDOMIZED) ? true : false;
+	semiGreedy = (criteria == RANDOM || criteria == SPT_RANDOM || criteria == SEP_RANDOM || criteria == ECT_RANDOM) ? true : false;
 
 	if (cptr)
 	{
@@ -70,7 +70,7 @@ CGTAlgorithmBase::ATOM_SCHEDULE CGTAlgorithmBase::calculate__tCmin(ATOM_SCHEDULE
 		// Decision GREDDY (parecia un error, pero no lo es). Puede usarse para realizar algun estudio.
 		//cptr->Atom.cj = cptr->Atom.rj + cptr->Atom.pj;
 
-		// Decisionv GREEDY-ADAPTATIVE
+		// Decision GREEDY-ADAPTATIVE
 		rx = (fAcumM[cptr->Atom.m] > cptr->Atom.rj) ? fAcumM[cptr->Atom.m] : cptr->Atom.rj;
 		cptr->Atom.cj = rx + cptr->Atom.pj;
 		if (cptr->Atom.cj < minor.cj) {
@@ -119,7 +119,7 @@ int CGTAlgorithmBase::obtain__G(ATOM_SCHEDULE_LIST_PTR G[], ATOM_SCHEDULE_LIST_P
 				spt = cptr;
 				*op_spt = index;
 			}
-			else if (cptr->Atom.pj == spt->Atom.pj && criteria == SPT_RANDOMIZED && flipcoin)
+			else if (cptr->Atom.pj == spt->Atom.pj && criteria == SPT_RANDOM && flipcoin)
 			{
 				spt = cptr;
 				*op_spt = index;
@@ -137,7 +137,7 @@ int CGTAlgorithmBase::obtain__G(ATOM_SCHEDULE_LIST_PTR G[], ATOM_SCHEDULE_LIST_P
 				*op_sep = index;
 			}
 			//else if ((fAcumM[cptr->Atom.m] + cptr->Atom.rj) == (fAcumM[sep->Atom.m] + sep->Atom.rj) && criteria == SEP_RANDOMIZED && flipcoin)
-			else if (cptr->Atom.rj == sep->Atom.rj && criteria == SEP_RANDOMIZED && flipcoin)
+			else if (cptr->Atom.rj == sep->Atom.rj && criteria == SEP_RANDOM && flipcoin)
 			{
 				sep = cptr;
 				*op_sep = index;
@@ -155,7 +155,7 @@ int CGTAlgorithmBase::obtain__G(ATOM_SCHEDULE_LIST_PTR G[], ATOM_SCHEDULE_LIST_P
 				*op_ect = index;
 			}
 			//else if ((fAcumM[cptr->Atom.m] + cptr->Atom.cj) == (fAcumM[ect->Atom.m] + ect->Atom.cj) && criteria == ECT_RANDOMIZED && flipcoin)
-			else if (cptr->Atom.cj == ect->Atom.cj && criteria == ECT_RANDOMIZED && flipcoin)
+			else if (cptr->Atom.cj == ect->Atom.cj && criteria == ECT_RANDOM && flipcoin)
 			{
 				ect = cptr;
 				*op_ect = index;
@@ -235,7 +235,7 @@ void CGTAlgorithmBase::SetSeed(int seed)
 //----------------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------------
-CGTAlgorithmClassic::CGTAlgorithmClassic(const CDataSet &dset) :
+CGTAlgorithm_DRules::CGTAlgorithm_DRules(const CDataSet &dset) :
 	CGTAlgorithmBase(dset) 
 { 
 }
@@ -243,7 +243,7 @@ CGTAlgorithmClassic::CGTAlgorithmClassic(const CDataSet &dset) :
 //----------------------------------------------------------------------------------
 // 
 //----------------------------------------------------------------------------------
-CGTAlgorithmClassic::~CGTAlgorithmClassic(void)
+CGTAlgorithm_DRules::~CGTAlgorithm_DRules(void)
 {
 	CGTAlgorithmBase::~CGTAlgorithmBase();
 }
@@ -251,7 +251,7 @@ CGTAlgorithmClassic::~CGTAlgorithmClassic(void)
 //----------------------------------------------------------------------------------
 // Implement a original G&T Algorithm propused by Gilffer and Thompson.
 //----------------------------------------------------------------------------------
-CSchedule CGTAlgorithmClassic::GenerateSchedule(enum SolveConflict criteria)
+CSchedule CGTAlgorithm_DRules::GenerateSchedule(enum SolveConflict criteria)
 {
 	float t, cj;
 	int j, m, op, succ, size_G, spt, sep, ect;
@@ -283,19 +283,19 @@ CSchedule CGTAlgorithmClassic::GenerateSchedule(enum SolveConflict criteria)
 		switch (criteria)
 		{
 			/* Randomized */
-			case RANDOMIZED:
+			case RANDOM:
 				op = genrand_int32() % size_G;
 			break;
 			/* Greedy & Semi-Greedy => (Shortest Processing Time) */
-			case SPT: case SPT_RANDOMIZED:
+			case SPT_GREEDY: case SPT_RANDOM:
 				op = spt;	
 			break;
 			/* Greedy & Semi-Greedy => (Start as Early as Possible) */
-			case SEP: case SEP_RANDOMIZED:
+			case SEP_GREEDY: case SEP_RANDOM:
 				op = sep;	
 			break;
 			/* Greedy & Semi-Greedy => (Earlist Completion Time) */
-			case ECT: case ECT_RANDOMIZED:
+			case ECT_GREEDY: case ECT_RANDOM:
 				op = ect;	
 			break;			
 			/* Error */
@@ -414,17 +414,17 @@ int	CGTAlgorithmAlfaRCL::obtain__G_with_cost(ATOM_SCHEDULE_LIST_PTR G[], ATOM_SC
 		{
 			switch (criteria)
 			{
-				case SPT:
+				case SPT_GREEDY:
 					if (cptr->Atom.pj < *customin) *customin = cptr->Atom.pj;
 					if (cptr->Atom.pj > *customax) *customax = cptr->Atom.pj;
 				break;
 
-				case SEP:
+				case SEP_GREEDY:
 					if (cptr->Atom.rj < *customin) *customin = cptr->Atom.rj;
 					if (cptr->Atom.rj > *customax) *customax = cptr->Atom.rj;
 				break;
 
-				case ECT: 
+				case ECT_GREEDY: 
 					if (cptr->Atom.cj < *customin) *customin = cptr->Atom.cj;
 					if (cptr->Atom.cj > *customax) *customax = cptr->Atom.cj;
 				break;
@@ -453,7 +453,7 @@ int CGTAlgorithmAlfaRCL::reduce__G_rcl(ATOM_SCHEDULE_LIST_PTR rG[], const ATOM_S
 	{
 		switch (criteria)
 		{
-			case SPT: 
+			case SPT_GREEDY: 
 				if (G[i]->Atom.pj >= min && G[i]->Atom.pj <= max)
 				{
 					rG[index] = G[i];
@@ -461,7 +461,7 @@ int CGTAlgorithmAlfaRCL::reduce__G_rcl(ATOM_SCHEDULE_LIST_PTR rG[], const ATOM_S
 				}
 			break;
 			
-			case SEP: 
+			case SEP_GREEDY: 
 				if (G[i]->Atom.rj >= min && G[i]->Atom.rj <= max)
 				{
 					rG[index] = G[i];
@@ -469,7 +469,7 @@ int CGTAlgorithmAlfaRCL::reduce__G_rcl(ATOM_SCHEDULE_LIST_PTR rG[], const ATOM_S
 				}
 			break;
 
-			case ECT:
+			case ECT_GREEDY:
 				if (G[i]->Atom.cj >= min && G[i]->Atom.cj <= max)
 				{
 					rG[index] = G[i];
@@ -493,7 +493,7 @@ CSchedule CGTAlgorithmAlfaRCL::GenerateSchedule(enum SolveConflict criteria)
 	ATOM_SCHEDULE_LIST_PTR conj_C, *conj_G, *conj_rG;
 	CSchedule schedule(NxM_SCHEDULE, iJobs, iMachines, iRecirc);
 
-	if (criteria != SPT && criteria != SEP && criteria != ECT)
+	if (criteria != SPT_GREEDY && criteria != SEP_GREEDY && criteria != ECT_GREEDY)
 		throw std::exception("GTAlgorithmAlfaRCL::GenerateSchedule(): <criteria> parameter only supports the values {SPT, SEP, ECT}");
 
 	 fAcumM = new float[iMachines] {0};

@@ -6,7 +6,7 @@
 #include "../jssp.model/CSchedule.h"
 
 enum SolveConflict {
-	RANDOMIZED = 1, SPT = 2, SEP = 4, ECT = 8, SPT_RANDOMIZED = 16, SEP_RANDOMIZED = 32, ECT_RANDOMIZED = 64
+	NONE = 0, RANDOM = 1, SPT_GREEDY = 2, SEP_GREEDY = 4, ECT_GREEDY = 8, SPT_RANDOM = 16, SEP_RANDOM = 32, ECT_RANDOM = 64
 };
 
 //------------------------------------------------------------------------------
@@ -59,18 +59,18 @@ protected:
 
 	public:
 		 //--- Constructor and Destructor ---//
-		  CGTAlgorithmBase					( const CDataSet &dset );
+		  CGTAlgorithmBase				 ( const CDataSet &dset );
 		 virtual ~CGTAlgorithmBase ( void );
 
 		 //--- Function virtual pure ---//
-		 virtual CSchedule GenerateSchedule (enum SolveConflict criteria = RANDOMIZED) = 0;
+		 virtual CSchedule GenerateSchedule (enum SolveConflict criteria = RANDOM) = 0;
 
 		 //--- Set functions ---//
 		 void SetSeed ( int seed );
 };
 
 //------------------------------------------------------------------------------
-//	ClassName: GTAlgorithmOriginal
+//	ClassName: CGTAlgorithmClassic
 //
 //  Description: Implement a original G&T algorithm proposed by Gilffer & Thompson (1960).
 //	
@@ -80,14 +80,61 @@ protected:
 //
 //  Revision: 16/04/2019 
 //------------------------------------------------------------------------------
-class CGTAlgorithmClassic : public CGTAlgorithmBase {
+/*class CGTAlgorithmClassic : public CGTAlgorithmBase {
+public:
+	//--- Constructor and Destructor ---//
+	CGTAlgorithmClassic(const CDataSet &dset);
+	virtual ~CGTAlgorithmClassic(void);
+
+	//---  ---//
+	virtual CSchedule GenerateSchedule(enum SolveConflict criteria = RANDOMIZED);
+};*/
+
+//------------------------------------------------------------------------------
+//	ClassName: GTAlgorithmHybrid
+//
+//  Description: Implement a hybric G&T algorithm proposed by Bierwirth & Mattfeld (1999).
+//
+//	Reference:
+//			- Bierwirth, C. and Mattfeld D.C.Production Scheduling and Reschedunling with Genetic
+//				Algorithms.Evolutinary Computation 7(1) : 1 - 17. 1999
+//
+//  Revision: 06/04/2019 
+//------------------------------------------------------------------------------
+class CGTAlgorithmHybrid : public CGTAlgorithmBase {
+private:
+	float Alfa;
+
+public:
+	//--- Constructor and Destructor ---//
+	CGTAlgorithmHybrid(const CDataSet &dset);
+	virtual ~CGTAlgorithmHybrid(void);
+
+	//--- Set functions ---//
+	void SetParamAlfa(float alfa);
+
+	//--- Get functions ---//
+	float GetParamAlfa(void);
+};
+
+//------------------------------------------------------------------------------
+//	ClassName: GTAlgorithmMixed
+//
+//  Description: Implements a G&T algorithm using dispacthing rules for solve
+//							 the undetermined step.
+//	
+//	Reference: Proposed by Carlos R. Herrera Márquez
+//
+//  Revision: 08/04/2019 
+//------------------------------------------------------------------------------
+class CGTAlgorithm_DRules : public CGTAlgorithmBase {
 	public:
 		//--- Constructor and Destructor ---//
-		 CGTAlgorithmClassic				  ( const CDataSet &dset );
-		virtual ~CGTAlgorithmClassic ( void );
+		 CGTAlgorithm_DRules				  ( const CDataSet &dset );
+		virtual ~CGTAlgorithm_DRules ( void );
 
 		//---  ---//
-		virtual CSchedule GenerateSchedule(enum SolveConflict criteria = RANDOMIZED);
+		virtual CSchedule GenerateSchedule(enum SolveConflict criteria);
 };
 
 //------------------------------------------------------------------------------
@@ -121,31 +168,6 @@ class CGTAlgorithmAlfaRCL : public CGTAlgorithmBase {
 		virtual CSchedule GenerateSchedule(enum SolveConflict criteria);
 };
 
-//------------------------------------------------------------------------------
-//	ClassName: GTAlgorithmHybrid
-//
-//  Description: Implement a hybric G&T algorithm proposed by Bierwirth & Mattfeld (1999).
-//
-//	Reference:
-//			- Bierwirth, C. and Mattfeld D.C.Production Scheduling and Reschedunling with Genetic
-//				Algorithms.Evolutinary Computation 7(1) : 1 - 17. 1999
-//
-//  Revision: 06/04/2019 
-//------------------------------------------------------------------------------
-class CGTAlgorithmHybrid : public CGTAlgorithmBase {
-	private:
-		float Alfa;
 
-	public:
-		 //--- Constructor and Destructor ---//
-		  CGTAlgorithmHybrid				  ( const CDataSet &dset);
-		 virtual ~CGTAlgorithmHybrid ( void );
-
-		 //--- Set functions ---//
-		 void SetParamAlfa ( float alfa );
-
-		 //--- Get functions ---//
-		 float GetParamAlfa ( void );
-};
 #endif 
 

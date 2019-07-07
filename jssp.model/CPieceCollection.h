@@ -189,6 +189,10 @@ class CPieceCollection {
 		void Create_N_Graph		  ( CGraphCAPP *Graph, const CMachineCollection *MachineList, CSchedule schedule );
 		void Create_NxM_Graph   ( CGraphCAPP *Graph, const CMachineCollection *MachineList, CSchedule schedule );
 
+		void Create_JSS_Graph  ( CGraphCAPP *Graph, const CMachineCollection *MachineList, CSchedule schedule );
+		void Create_FJSS_Graph ( CGraphCAPP *Graph, const CMachineCollection *MachineList, CSchedule schedule );
+		void Create_PFSS_Graph ( CGraphCAPP *Graph, const CMachineCollection *MachineList, CSchedule schedule );
+
 		//---  ---//
 		enum ProblemType ProblemType ( void );
 					  		

@@ -11,7 +11,7 @@
 //  Description: Representa un grafo para el JobShop Scheduling Problem (JSSP) que puede
 //							 ser incluido en un sistema CAPP. 
 //						   Es compatible con la representacion de secuencias del tipo <N> y <N x M>,
-//							 y con las siguientes variantes del problema: PFSS, FSS, GFSS, JSS.
+//							 y con las siguientes variantes del problema: PFSS, FSS, GFSS, JSS, FJSS.
 //
 //  Revision   : 17/04/2019 
 //------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ class CGraphCAPP : public CGraphBase {
 	/* Declaracion de un item para DUE-DATE */
 	typedef struct {
 		unsigned idJob;
-		float	Value;
+		float	value;
 	} STRUCT_DUEDATE;
 
 	// Clase amiga
@@ -40,83 +40,73 @@ class CGraphCAPP : public CGraphBase {
 		bool		  flagNe;
 		bool		  flagNt;
 		bool		  flagPw;		
-		
-		GAGenome				 *Genome;
-		CGraphCAPP	     *imgGraph;
-		STRUCT_DUEDATE	 *Di;
-		enum ImproveType  ImpType;
-		TObserverEnergy *hndEnergy;
 
-	private:	// Declaracion funciones de utileria
-		
+		GAGenome			 *Genome;
+		CGraphCAPP	   *imgGraph;
+		STRUCT_DUEDATE *Di;
+
+	private:	// Declaracion funciones de utileria	
 		virtual void CreateTR		 ( void );
 		virtual void TravelGraph ( void );
-					  void FastClear	 ( void );
 					  void CreateTM_ON ( void );				
+					  void FastClear	 ( void );
 
 		//---	IBUIT Technique Functions  ---//
 		virtual bool IBUIT_Technique ( void );
+		void ApplyForcedLeftJump(int opCurrent, int opBack);
 
 		//--- Funciones para los objetivo 'FlowTime', 'Lateness', 'Earliness' y 'Tardines' ---//
-		void  CalculateCi												( void );
-		int   IndexInDueDateVector							( unsigned id );
+		void  CalculateCi					 ( void );
+		int   IndexInDueDateVector ( unsigned id );
 
 	public:
 		//--- Constructors and Destructor ---//
-		 CGraphCAPP														( int piece, int machine, int recirc, bool apply_ibuit = false );		
-		 CGraphCAPP														( const CGraphCAPP &Obj );
-		~CGraphCAPP														( void );													
+		 CGraphCAPP													( int piece, int machine, int recirc, bool apply_ibuit = false );		
+		 CGraphCAPP													( const CGraphCAPP &Obj );
+		~CGraphCAPP													( void );													
 
 		//--- Set Functions ---/
-		void SetSequence												( const unsigned *sequence );				
-		void SetGantChartView										( TObserverGantt *handler );
-    void SetEnergyChartView									( TObserverEnergy *handler );
-		void SetMachineInformation							( const CMachineCollection *Obj );
-		void SetJobsList												( unsigned *jobs_list );
-		void SetImproveType											( enum ImproveType type );
+		void SetSequence										( const unsigned *sequence );				
+
+		void SetMachineInformation					( const CMachineCollection *Obj );
+		void SetJobsList										( unsigned *jobs_list );
+		void SetImproveType									( enum ImproveType type );
 		
-		void SetEnergyMeasureCount							( unsigned count );
-		void SetImproveObjetive									( bool cmax, bool fmax, bool lmax, bool emax, bool tmax, bool imax, bool ne, bool nt, bool pw);
-		bool SetDueDate													( unsigned id, float di );		
-		void SetLinkToPerformance								( unsigned long &count );
-		void SetLinkToGenome										( GAGenome &g );
+		void SetEnergyMeasureCount					( unsigned count );
+		void SetImproveObjetive							( bool cmax, bool fmax, bool lmax, bool emax, bool tmax, bool imax, bool ne, bool nt, bool pw);
+		bool SetDueDate											( unsigned id, float di );		
+		void SetLinkToPerformance						( unsigned long &count );
+		void SetLinkToGenome								( GAGenome &g );
 			
 		//--- Get Functions ---//
-		int								GetPieceCount					( void ) const;
-		int							  GetMachineCount				( void ) const;
-		const unsigned   *GetSequence						( void ) const;
-		enum ImproveType  GetImproveType				( void ) const;
-		enum ProblemType  GetProblemType				( void ) const;
-
-		unsigned *GetJobsList										( void ) const;
-		unsigned  GetEnergyMeasureCount					( void ) const;
-		void      GetValue											( int index, unsigned *id, const CMachineGroupLite **machines ) const;		
-		void		  GetDueDate										( int index, unsigned *id, float *di ) const;		
-		void		  GetImproveObjetive						( bool *cmax, bool *fmax, bool *lmax, bool *emax, bool *tmax, bool *imax, bool *ne, bool *nt, bool *pw) const;
-		TObserverGantt  *GetGantChartView				( void ) const;
-    TObserverEnergy *GetEnergyChartView			( void ) const;
-		unsigned long *GetLinkToPerformance			( void ) const;
+		unsigned *GetJobsList								( void ) const;
+		unsigned  GetEnergyMeasureCount			( void ) const;
+		void      GetValue									( int index, unsigned *id, const CMachineGroupLite **machines ) const;		
+		void		  GetDueDate								( int index, unsigned *id, float *di ) const;		
+		void		  GetImproveObjetive				( bool *cmax, bool *fmax, bool *lmax, bool *emax, bool *tmax, bool *imax, bool *ne, bool *nt, bool *pw) const;
+		TObserverGantt  *GetGantChartView		( void ) const;
+    TObserverEnergy *GetEnergyChartView	( void ) const;
+		unsigned long *GetLinkToPerformance	( void ) const;
 		const CMachineCollection *GetMachineInformation ( void ) const;
 
 		//--- IBUIT Functions ---//
-		bool ApplyIBUIT													( void ) const;
-		void ApplyIBUIT												  ( bool apply );		
-		void ApplyForcedLeftJump								( int opCurrent, int opBack );
-
+		bool ApplyIBUIT										( void ) const;
+		void ApplyIBUIT										( bool apply );		
+		
 		//--- Objective Functions ---//		
-		virtual float Makespan									( void );
-		float FlowTime													( unsigned *jobs_list = NULL );	// Objetivo Fmax	
-		float Lateness													( unsigned *jobs_list = NULL );	// Objetivo	Lmax
-		float Earliness													( unsigned *jobs_list = NULL );	// Objetivo	Emax
-		float Tardines													( unsigned *jobs_list = NULL );	// Objetivo	Tmax
-		float Idle															( void );												// Objetivo	Imax
-		int		EarlyJobsCount										( void );												// Objetivo	Ne
-		int		TardinesJobsCount									( void );												// Objetivo	Nt		
-		virtual float EnergyConsumption					( void );										    // Objetivo	Pw	
-    float GetMaxEnergyConsumption				    ( void );
+		virtual float Makespan						( void );
+		float FlowTime										( unsigned *jobs_list = NULL );	// Objetivo Fmax	
+		float Lateness										( unsigned *jobs_list = NULL );	// Objetivo	Lmax
+		float Earliness										( unsigned *jobs_list = NULL );	// Objetivo	Emax
+		float Tardines										( unsigned *jobs_list = NULL );	// Objetivo	Tmax
+		float Idle												( void );												// Objetivo	Imax
+		int		EarlyJobsCount							( void );												// Objetivo	Ne
+		int		TardinesJobsCount						( void );												// Objetivo	Nt		
+		virtual float EnergyConsumption		( void );										    // Objetivo	Pw	
+    float GetMaxEnergyConsumption			( void );
 		
 
-		//--- Graphic Function ---//	
+		//--- Graphics Function ---//	
 		virtual void  CreateGanttChart  ( void );
 		void  CreateEnergyChart ( void );
 

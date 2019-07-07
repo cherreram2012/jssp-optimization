@@ -1,10 +1,10 @@
-#include "CGraphCAPP.h"
-#include <stdlib.h>
+#include <time.h>
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <time.h>
+#include "CGraphCAPP.h"
 
 #define DEBUG_HOLE 0
 
@@ -15,8 +15,6 @@
 ///																																									 ///
 ///==================================================================================///
 ///==================================================================================///
-
-
 
 //----------------------------------------------------------------------------------
 //	Funcion de borrado rapido del grafo. Esta funcion usa 1/3 de MxN para el borrado
@@ -77,7 +75,7 @@ void CGraphCAPP::FastClear (void)
 	{
 		//--- 1er 1/2 ---//
 		Di[a].idJob = 0;
-		Di[a].Value = 0;
+		Di[a].value = 0;
 		Ci[a]				= 0;
 					
 		indexOpB[a] = 0;
@@ -85,7 +83,7 @@ void CGraphCAPP::FastClear (void)
 
 		//--- 2do 1/2 ---//
 		Di[d].idJob = 0;
-		Di[d].Value = 0;
+		Di[d].value = 0;
 		Ci[d]				= 0;
 					
 		indexOpB[d] = 0;
@@ -200,7 +198,7 @@ void CGraphCAPP::CreateTM_ON (void)
 	int f, c;
 	float step, instant, init, end;
 
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	if (!TM_ON)
 	{
@@ -261,7 +259,7 @@ void CGraphCAPP::TravelGraph (void)
 	timeIBUIT = 0;
 
 	CreateTR();
-	isGraphTravel = true;
+	isGraphTraveled = true;
 	
 	if (applyIBUIT == true)
 	{				
@@ -343,22 +341,22 @@ bool CGraphCAPP::IBUIT_Technique(void)
 
 					switch (ImpType)
 					{
-					case itAtLeastOne:
-						if ((flagCmax && re_cmax <= cmax) || (flagFmax && re_fmax <= fmax) ||
-							(flagLmax && re_lmax <= lmax) || (flagEmax && re_emax >= emax) ||
-							(flagTmax && re_tmax <= tmax) || (flagImax && re_imax <= imax) ||
-							(flagNe   && re_ne >= ne) || (flagNt   && re_nt <= nt) ||
-							(flagPw   && re_pw <= pw))
-						{
-							ibuit_ok = true;
-							ApplyForcedLeftJump(indexOpC, indexOpB[i]);
-
-							// Se actualiza el cromosoma pasado al grafo
-							if (Genome != NULL && (ProbType == FSS || ProbType == GFSS || ProbType == JSS || ProbType == FFSS || ProbType == FJSS))
+						case itAtLeastOne:
+							if ((flagCmax && re_cmax <= cmax) || (flagFmax && re_fmax <= fmax) ||
+								(flagLmax && re_lmax <= lmax) || (flagEmax && re_emax >= emax) ||
+								(flagTmax && re_tmax <= tmax) || (flagImax && re_imax <= imax) ||
+								(flagNe   && re_ne >= ne) || (flagNt   && re_nt <= nt) ||
+								(flagPw   && re_pw <= pw))
 							{
-								GA1DArrayGenome <unsigned> &G = STA_CAST(GA1DArrayGenome <unsigned> &, *Genome);
-								for (int i = 0; i < (iJobs * iMachines + iRecirc); i++) G.gene(i, Sequence[i]);
-							}
+								ibuit_ok = true;
+								ApplyForcedLeftJump(indexOpC, indexOpB[i]);
+
+								// Se actualiza el cromosoma pasado al grafo
+								if (Genome != NULL && (ProbType == FSS || ProbType == GFSS || ProbType == JSS || ProbType == FFSS || ProbType == FJSS))
+								{
+									GA1DArrayGenome <unsigned> &G = STA_CAST(GA1DArrayGenome <unsigned> &, *Genome);
+									for (int i = 0; i < (iJobs * iMachines + iRecirc); i++) G.gene(i, Sequence[i]);
+								}
 
 #if DEBUG_HOLE
 							printf("\n\nDESPUES: ");
@@ -367,19 +365,19 @@ bool CGraphCAPP::IBUIT_Technique(void)
 							printf("\nCon exito!!!!!!!\n\n\n");
 							getch();
 #endif
-							imgGraph->ClearGraph(); stepIBUIT++;
-							return 1;
-						}
+								imgGraph->ClearGraph(); stepIBUIT++;
+								return 1;
+							}
 #if DEBUG_HOLE
-						else
-						{
-							printf("\n\nDESPUES: ");
-							const unsigned *seq = imgGraph->GetSequence();
-							for (int k = 0; k < (iJobs * iMachines + iRecirc); k++) printf("%d ", seq[k]);
-							printf("\nCmax: %0.1f", re_cmax);
-							printf("\nNo mejora!!!!!!!\n\n\n");
-							getch();
-						}
+							else
+							{
+								printf("\n\nDESPUES: ");
+								const unsigned *seq = imgGraph->GetSequence();
+								for (int k = 0; k < (iJobs * iMachines + iRecirc); k++) printf("%d ", seq[k]);
+								printf("\nCmax: %0.1f", re_cmax);
+								printf("\nNo mejora!!!!!!!\n\n\n");
+								getch();
+							}
 #endif
 						break;
 
@@ -420,8 +418,6 @@ bool CGraphCAPP::IBUIT_Technique(void)
 
 	return 0;
 }
-
-
 
 //----------------------------------------------------------------------------------
 //	Funcion de utileria. Calcula la permanencia de cada trabajo en el 
@@ -490,7 +486,7 @@ CGraphCAPP::CGraphCAPP (int piece, int machine, int recirc, bool apply_ibuit)
 	iRecirc				= recirc;
 	Cmax					= 0.0;
 	iMeasureCount	= 10;
-	isGraphTravel	= false;
+	isGraphTraveled	= false;
   TM_ON         = NULL;
 	JobsList			= NULL;
 	hndGantt			= NULL;
@@ -513,6 +509,7 @@ CGraphCAPP::CGraphCAPP (int piece, int machine, int recirc, bool apply_ibuit)
 	flagNt				=	0;
 	flagPw				=	0;
 	ibuit_ok			= false;
+	schedule.SetDimension(NxM_SCHEDULE, iJobs, iMachines, iRecirc);
 
   TD			 = new STRUCT_NODE	      [iJobs * iMachines + iRecirc];
 	TR       = new STRUCT_NODE_RESULT [iJobs * iMachines + iRecirc];
@@ -568,7 +565,7 @@ CGraphCAPP::CGraphCAPP (const CGraphCAPP &Obj)
 	iMachines			= Obj.GetMachineCount();
 	Cmax					= 0.0;
 	iMeasureCount	= Obj.GetEnergyMeasureCount();  
-	isGraphTravel	= false;
+	isGraphTraveled	= false;
 	applyIBUIT    = Obj.ApplyIBUIT();
 	ProbType      = Obj.GetProblemType();
 	//sequence      = Obj.GetSequence();
@@ -654,24 +651,6 @@ void CGraphCAPP::SetSequence (const unsigned *sequence)
 	for (int i = 0; i < iJobs * iMachines + iRecirc; i++)	Sequence[i] = sequence[i];
 }
 
-//----------------------------------------------------------------------------
-//	Establece el manipulador de la interfaz donde sera vizualizado el diagrama
-//	de Gantt.
-//----------------------------------------------------------------------------
-void CGraphCAPP::SetGantChartView (TObserverGantt *handler)
-{
-	hndGantt = handler;
-}
-
-//----------------------------------------------------------------------------
-//	Establece el manipulador de la interfaz donde sera vizualizado el grafico
-//	de Energia.
-//----------------------------------------------------------------------------
-void CGraphCAPP::SetEnergyChartView	(TObserverEnergy *handler)
-{
-  hndEnergy = handler;
-}
-
 //----------------------------------------------------------------------------------
 //	Establece la informacion relacionada con las maquinas. 
 //----------------------------------------------------------------------------------
@@ -730,7 +709,7 @@ void CGraphCAPP::SetEnergyMeasureCount (unsigned count)
 	}
 
 	Cmax = 0.0;
-	isGraphTravel = false;
+	isGraphTraveled = false;
 }
 
 //----------------------------------------------------------------------------
@@ -768,7 +747,7 @@ bool CGraphCAPP::SetDueDate (unsigned id, float di)
 	if (id > 0 && id <= (unsigned)iJobs)
 	{
 		Di[id - 1].idJob = id;
-		Di[id - 1].Value = di;
+		Di[id - 1].value = di;
 	
 		return 1;
 	}
@@ -794,46 +773,6 @@ void CGraphCAPP::SetLinkToGenome (GAGenome &g)
 {
 	Genome = &g;
 }	
-
-//----------------------------------------------------------------------------
-//	Devuelve la cantidad de piezas que contiene el grafo.
-//----------------------------------------------------------------------------
-int CGraphCAPP::GetPieceCount (void) const
-{
-	return iJobs;
-}
-
-//----------------------------------------------------------------------------
-//	Devuelve la cantidad de maquinas que contiene el grafo.
-//----------------------------------------------------------------------------
-int CGraphCAPP::GetMachineCount (void) const
-{
-	return iMachines;
-}
-
-//----------------------------------------------------------------------------
-//	Devuelve la secuencia que representa al grafo.
-//----------------------------------------------------------------------------
-const unsigned *CGraphCAPP::GetSequence (void) const
-{
-	return Sequence;
-}
-
-//----------------------------------------------------------------------------
-//	Devuelve el tipo de mejora para los objetivos
-//----------------------------------------------------------------------------
-enum ImproveType CGraphCAPP::GetImproveType (void) const
-{
-	return ImpType;
-}
-
-//----------------------------------------------------------------------------
-//	Devuelve el tipo de problema que representa el grafo.
-//----------------------------------------------------------------------------
-enum ProblemType CGraphCAPP::GetProblemType	(void) const
-{
-	return ProbType;
-}
 
 //----------------------------------------------------------------------------
 //	Devuelve la lista de trabajos que es usada por los objetivos Fmax, Lmax, 
@@ -880,7 +819,7 @@ void CGraphCAPP::GetDueDate (int index, unsigned *id, float *di) const
 	if (index >= 0 && index < iJobs)
 	{
 		*id = Di[index].idJob; 
-		*di = Di[index].Value;
+		*di = Di[index].value;
 	}
 	else
 	{
@@ -991,7 +930,7 @@ void CGraphCAPP::ApplyForcedLeftJump (int opCurrent, int opBack)
 float CGraphCAPP::Makespan (void)
 {	
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph(); 
+	if (!isGraphTraveled) TravelGraph(); 
 
 	return Cmax;
 }
@@ -1010,7 +949,7 @@ float CGraphCAPP::FlowTime (unsigned *jobs_list)
 	assert(JobsList != NULL || jobs_list != NULL);
 
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph(); 
+	if (!isGraphTraveled) TravelGraph(); 
 	
 	for (int i = 0; i < iJobs; i++)
 	{
@@ -1038,7 +977,7 @@ float CGraphCAPP::Lateness (unsigned *jobs_list)
 	assert(JobsList != NULL || jobs_list != NULL);
 
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 	
 	for (int i = 0; i < iJobs; i++)
 	{
@@ -1049,7 +988,7 @@ float CGraphCAPP::Lateness (unsigned *jobs_list)
 
 		if (k != -1)
 		{
-			Li = (!EqualCero(Ci[k] - Di[k].Value)) ? Ci[k] - Di[k].Value: 0.0f;
+			Li = (!EqualCero(Ci[k] - Di[k].value)) ? Ci[k] - Di[k].value: 0.0f;
 			L += Li;
 		}
 	}
@@ -1106,7 +1045,7 @@ float CGraphCAPP::Idle (void)
 	float TOpActual, t_startBP, TPiAnt_Ant, idle = 0;
 
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph(); 
+	if (!isGraphTraveled) TravelGraph(); 
 
 	for (indexOpC = 1; indexOpC < (iJobs * iMachines + iRecirc); indexOpC++)	
 	{																									
@@ -1144,7 +1083,7 @@ float CGraphCAPP::EnergyConsumption (void)
 	float consume = 0;
 
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	for (int i = 0; i < (int)iMeasureCount; i++)
 		for (int m = 0; m < iMachines; m++)
@@ -1162,10 +1101,10 @@ int	CGraphCAPP::EarlyJobsCount (void)
 	int count = 0;
 	
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 	
 	for (int i = 0; i < iJobs; i++) 
-		if (Ci[i] - Di[i].Value <= 0) count++;
+		if (Ci[i] - Di[i].value <= 0) count++;
 
 	return count;
 }
@@ -1178,10 +1117,10 @@ int	CGraphCAPP::TardinesJobsCount (void)
 	int count = 0;
 	
 	// Si todavia no se ha recorrido el grafo, lo recorro ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 	
 	for (int i = 0; i < iJobs; i++) 
-		if (Ci[i] - Di[i].Value > 0) count++;
+		if (Ci[i] - Di[i].value > 0) count++;
 
 	return count;
 }
@@ -1195,7 +1134,7 @@ void CGraphCAPP::CreateGanttChart(void)
 	int j, op;
 
 	// Si todavia no se ha recorrido el grafo, se corre ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	hndGantt->PrintCmaxValue(Makespan());
 	hndGantt->PrintFmaxValue(FlowTime(JobsList));
@@ -1251,7 +1190,7 @@ void CGraphCAPP::CreateEnergyChart(void)
 	for (i = 0; i < iMachines; i++) list[i] = new char[len + 1];
 
 	// Si todavia no se ha recorrido el grafo, se corre ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	ec = this->EnergyConsumption();
 	hndEnergy->SetDataChart(Cmax, iMeasureCount);
@@ -1294,7 +1233,7 @@ float CGraphCAPP::GetMaxEnergyConsumption(void)
 	float consume = 0.0, aux;
 
 	// Si todavia no se ha recorrido el grafo, se corre ahora
-	if (!isGraphTravel) TravelGraph();
+	if (!isGraphTraveled) TravelGraph();
 
 	for (int i = 0; i < (int)iMeasureCount; i++)
 	{
@@ -1397,7 +1336,7 @@ void CGraphCAPP::ClearGraph (void)
 {
 	// Pongo las variables de intercambio y control a su estado inicial
 	Cmax					= 0.0;
-	isGraphTravel = false;
+	isGraphTraveled = false;
 	Performance		= NULL;
 	hndGantt			= NULL;
   hndEnergy     = NULL;
@@ -1512,7 +1451,7 @@ void CGraphCAPP::tmpPrint_DD (void)
 {
 	for (int i = 0; i < iJobs; i++)
 	{
-		printf("Id: %d    Di: %.1f\n", Di[i].idJob, Di[i].Value);
+		printf("Id: %d    Di: %.1f\n", Di[i].idJob, Di[i].value);
 	}
 }
 
@@ -1559,7 +1498,7 @@ void CGraphCopier::Duplicate (CGraphCAPP *dest, const CGraphCAPP &src)
 	// Copio los valores de intercambio	
 	dest->ImpAnd				= 0;
 	dest->Cmax					= 0.0;
-	dest->isGraphTravel = false;
+	dest->isGraphTraveled = false;
 	dest->applyIBUIT    = (dest->applyIBUIT) ? src.applyIBUIT : false;
 	dest->iRecirc				= src.iRecirc;
 	dest->iMeasureCount = src.iMeasureCount;
@@ -1641,7 +1580,7 @@ void CGraphCopier::Duplicate (CGraphCAPP *dest, const CGraphCAPP &src)
 		{
 			dest->Ci[i]       = src.Ci[i];
 			dest->Di[i].idJob = src.Di[i].idJob;
-			dest->Di[i].Value = src.Di[i].Value;
+			dest->Di[i].value = src.Di[i].value;
 
 			dest->indexOpB[i] = 0;
 			dest->j_block[i]  = 0;

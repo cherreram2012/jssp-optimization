@@ -27,6 +27,12 @@
     <ClCompile Include="CLocalSearch.cpp">
       <Filter>Sources files</Filter>
     </ClCompile>
+    <ClCompile Include="CSetOperator.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRestrictedNeighbor.cpp">
+      <Filter>Sources files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CGTAlgorithm.h">
@@ -39,6 +45,15 @@
       <Filter>Header files</Filter>
     </ClInclude>
     <ClInclude Include="CLocalSearch.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSetOperator.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRestrictedNeighbor.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="CBuilderAlgorithm.h">
       <Filter>Header files</Filter>
     </ClInclude>
   </ItemGroup>

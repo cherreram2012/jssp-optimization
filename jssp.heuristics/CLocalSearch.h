@@ -36,22 +36,42 @@ class CLocalSearchStrategy
 		//--- Function virtual pure ---//
 		virtual CSchedule Execute ( const CSchedule &entry, float *fo = nullptr ) = 0;
 
-		void UserData				  ( CPieceCollection *cJ, CMachineCollection *cM );
-		void NeighborStrategy ( CNeighborhoobStrategy *neighbors ); 
+		void NeighborStrategy ( CNeighborhoobStrategy *neighbor ); 
+		virtual void UserData ( CPieceCollection *cJ, CMachineCollection *cM );
+};
+
+//------------------------------------------------------------------------------
+//	ClassName: CLocalSearchIBUIT
+//
+//  Description: Abstract base class for Local Search with IBUIT tecnique.
+//
+//  Revision: 16/05/2019 
+//------------------------------------------------------------------------------
+class CLocalSearchIBUIT : public CLocalSearchStrategy
+{
+	protected:
+		CGraphCAPP *GraphPrime;
+
+	public:
+		//--- Constructor and destructor ---//
+		 CLocalSearchIBUIT				 ( void );
+		virtual ~CLocalSearchIBUIT ( void );
+
+		virtual void UserData(CPieceCollection *cJ, CMachineCollection *cM);
 };
 
 //------------------------------------------------------------------------------
 //	ClassName: CFirstImprovingSearch
 //
-//  Description: .
+//  Description: Concrete class for Firt Improving Local Search Strategy.
 //
 //  Revision: 16/05/2019 
 //------------------------------------------------------------------------------
 class CFirstImprovingSearch : public CLocalSearchStrategy {
 	public:
 		//--- Constructor and destructor ---//
-		CFirstImprovingSearch	 ( void );
-		~CFirstImprovingSearch ( void );
+		 CFirstImprovingSearch ( void );
+		virtual ~CFirstImprovingSearch ( void );
 
 		virtual CSchedule Execute ( const CSchedule &entry, float *fo = nullptr );
 };
@@ -59,16 +79,68 @@ class CFirstImprovingSearch : public CLocalSearchStrategy {
 //------------------------------------------------------------------------------
 //	ClassName: BestImprovingSearch
 //
-//  Description: .
+//  Description: Concrete class for Best Improving Local Search Strategy.
 //
 //  Revision: 16/05/2019 
 //------------------------------------------------------------------------------
 class CBestImprovingSearch : public CLocalSearchStrategy {
 	public:
 		//--- Constructor and destructor ---//
-		CBestImprovingSearch	( void );
-		~CBestImprovingSearch ( void );
+		 CBestImprovingSearch	( void );
+		 virtual ~CBestImprovingSearch ( void );
 
 		virtual CSchedule Execute ( const CSchedule &entry, float *fo = nullptr );
+};
+
+//------------------------------------------------------------------------------
+//	ClassName: 
+//
+//  Description: Concrete class for Firt Improving Local Search Strategy 
+//						   appliying IBUIT Technique.
+//
+//  Revision: 07/06/2019 
+//------------------------------------------------------------------------------
+class CFirstImprovingIBUIT : public CLocalSearchIBUIT
+{
+	public:
+		//--- Constructor and destructor ---//
+		 CFirstImprovingIBUIT ( void );
+		 virtual ~CFirstImprovingIBUIT ( void );
+
+		virtual CSchedule Execute ( const CSchedule &entry, float *fo = nullptr );
+};
+
+//------------------------------------------------------------------------------
+//	ClassName: 
+//
+//  Description: Concrete class for Best Improving Local Search Strategy 
+//						   appliying IBUIT Technique.
+//
+//  Revision: 07/06/2019 
+//------------------------------------------------------------------------------
+class CBestImprovingIBUIT : public CLocalSearchIBUIT
+{
+	public:
+		//--- Constructor and destructor ---//
+		 CBestImprovingIBUIT ( void );
+		 virtual ~CBestImprovingIBUIT ( void );
+
+		virtual CSchedule Execute ( const CSchedule &entry, float *fo = nullptr );
+};
+
+//------------------------------------------------------------------------------
+//	ClassName: CVariableDescentSearch
+//
+//  Description: Concrete class for Variable Descent Local Search Strategy.
+//
+//  Revision: 16/05/2019 
+//------------------------------------------------------------------------------
+class CVariableDescentSearch : public CLocalSearchStrategy {
+public:
+	//--- Constructor and destructor ---//
+	 CVariableDescentSearch ( void );
+	 virtual ~CVariableDescentSearch ( void );
+
+	virtual CSchedule Execute ( const CSchedule &entry, float *fo = nullptr );
 };
 #endif

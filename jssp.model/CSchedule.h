@@ -10,6 +10,9 @@ class CScheduleBase {
 
 };
 
+class CSetOperator;
+class RestrictedNeighbor;
+
 //------------------------------------------------------------------------------
 //	ClassName: CSPSequence
 //
@@ -28,6 +31,9 @@ class CSchedule {
 		ScheduleLengthType LengthType;
 
 	public:
+		friend CSetOperator;
+		friend RestrictedNeighbor;
+
 		//--- Constructor and destructor ---//
 		 CSchedule ( void );
 		 CSchedule ( ScheduleLengthType type, int njobs, int nmachines, int nrecirc = 0 );
@@ -36,10 +42,11 @@ class CSchedule {
 
 		//--- Set functions ---//
 		void AddToSchedule ( unsigned id );
-		void SetIdByIndex	 ( int index, unsigned id );
 		void SetDimension  ( ScheduleLengthType type, int njobs, int nmachines, int nrecirc = 0 );
+		void SetIdByIndex	 ( int index, unsigned id );
 		
 		//--- Get functions ---//
+				 int GetSize					( void ) const;
 				void GetDimension		  ( int *jobs, int *machines, int *recirc ) const;
 		unsigned GetIdByIndex			( int index ) const;
 		unsigned GetJobsCount			( void ) const;
@@ -49,10 +56,13 @@ class CSchedule {
 		//--- General purpose functions ---//
 		void SwapAtom			 ( unsigned int indexA, unsigned int indexB );
 		void SwapSubsetM	 ( unsigned int subsetA, unsigned int subsetB );
+		bool IsValid			 ( bool recirc = false ) const;
 		bool IsComplete		 ( void ) const;
 		void ClearSchedule ( void );
+		void ResectInsertionIndex ( void );
 
 		//--- Overload funtions ---//
+		bool operator == (const CSchedule &obj);
 		CSchedule &operator = (const CSchedule &obj);
 		friend std::ostream& operator << ( std::ostream &stream, const CSchedule &obj );
 };

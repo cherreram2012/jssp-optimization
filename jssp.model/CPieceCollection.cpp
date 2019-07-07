@@ -1188,6 +1188,90 @@ void CPieceCollection::Create_NxM_Graph(CGraphCAPP *Graph, const CMachineCollect
 }
 
 //----------------------------------------------------------------------------
+//	
+//----------------------------------------------------------------------------
+void CPieceCollection::Create_JSS_Graph(CGraphCAPP *Graph, const CMachineCollection *MachineList, CSchedule schedule)
+{
+	int machineCount;
+	int *control_OP;
+	const CMachineGroupLite *M;
+	CPieceTechnologicalRoute Piece;
+
+	// Determino cuantas maquinas hay declaradas
+	machineCount = MachineList->GetMachineCount();
+
+	// Se crea un arreglo de piezas que no contiene operaciones nulas.
+	// Nota: se define <operaciones nulas> como aquellas operaciones que su tiempo 
+	//       de procesamiento es cero.
+	if (!ArrayPieceAlreadyClean) CleanNullOperations(&cleanArrayPiece);
+
+	// Verifico que ya se haya calculado la informacion referente a la recirculacion de
+	// las piezas en el sistema. En caso de que no se halla calculado, lo calculo ahora
+	//if (!RecircAlreadyCalculated) GetRecirculationData(NULL);
+
+	// Le establezco al grafo la secuencia que lo representa
+	//Graph->SetSequence(sequence);
+
+	// Inicializo la estructura de control de la operaciones
+	control_OP = new int[iPieceCount] {0};
+	/*for (int i = 0; i < iPieceCount; i++)
+	{
+		control_OP[i] = 0;
+
+		// Se establecen los valores de DueDate de los trabajos
+		Graph->SetDueDate(cleanArrayPiece[i].GetPieceID(), cleanArrayPiece[i].GetDueDate());
+	}*/
+
+	// Establesco el tipo de problema que representa el grafo
+	Graph->SetProblemType(ProblemType());
+
+	// Establezco la informacion de las maquinas
+	Graph->SetMachineInformation(MachineList);
+
+	// Construyo el grafo segun la secuencia pasada por parametro
+	for (int j = 0; j < iPieceCount * machineCount; j++)
+	{
+		for (int k = 0; k < iPieceCount; k++)
+		{
+			if (schedule.GetIdByIndex(j) == cleanArrayPiece[k].GetPieceID())
+			{
+				int op = control_OP[k];
+
+				M = cleanArrayPiece[k].GetMachinesGroupByIndex(op)->GetGroupLite(*MachineList);
+				Graph->SetNodeValue(j, schedule.GetIdByIndex(j), M);
+				control_OP[k]++;
+				break;
+			}
+		}
+	}
+
+	// Trato la parte de la sequencia que representa la RECIRCULACION. SI LA HAY!!!
+	/*if (RecircData.pRecirc != 0 && RecircData.P_Recirc != NULL)
+	{
+		int init = iPieceCount * machineCount;
+		int end = init + RecircData.tRecirc;
+
+		for (int r = init; r < end; r++)
+		{
+			for (int p = 0; p < iPieceCount; p++)
+			{
+				if (schedule.GetIdByIndex(r) == cleanArrayPiece[p].GetPieceID())
+				{
+					int op = control_OP[p];
+
+					M = cleanArrayPiece[p].GetMachinesGroupByIndex(op)->GetGroupLite(*MachineList);
+					Graph->SetNodeValue(r, schedule.GetIdByIndex(r), M);
+					control_OP[p]++;
+					break;
+				}
+			}
+		}
+	}*/
+
+	delete[]control_OP;
+}
+
+//----------------------------------------------------------------------------
 //	Devuelve el tipo de problema segun la instancia (FSSP, JSSP)	
 //----------------------------------------------------------------------------
 enum ProblemType CPieceCollection::ProblemType (void)

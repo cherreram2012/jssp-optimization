@@ -3,6 +3,9 @@
 #define CNeighborhood_H
 
 #include "../jssp.model/CSchedule.h"
+#include "../jssp.model/CSchedule.h"
+#include "../jssp.model/CPieceCollection.h"
+#include "../jssp.model/CMachineCollection.h"
 
 enum NeighborhoobStrategy { LINEAR_ADJACENT, CIRCULAR_ADJACENT, LINEAR_NO_ADJACENT };
 
@@ -38,7 +41,7 @@ class CNeighborhoobStrategy
 //------------------------------------------------------------------------------
 //	ClassName: CLinearAdjacentNeighbor
 //
-//  Description: .
+//  Description: Concrete class for Linear Adjacent Neighborhood structure.
 //
 //  Revision: 05/05/2019 
 //------------------------------------------------------------------------------
@@ -46,8 +49,8 @@ class CLinearAdjacentNeighbor : public CNeighborhoobStrategy
 {
 	public:
 		//--- Constructor and destructor ---//
-		CLinearAdjacentNeighbor				  ( void );
-		~CLinearAdjacentNeighbor			  ( void );
+		 CLinearAdjacentNeighbor ( void );
+		~CLinearAdjacentNeighbor ( void );
 
 		//---  ---//
 		virtual int Cardinality				  ( void );
@@ -55,9 +58,9 @@ class CLinearAdjacentNeighbor : public CNeighborhoobStrategy
 };
 
 //------------------------------------------------------------------------------
-//	ClassName: 
+//	ClassName: CCircularAdjacentNeighbor
 //
-//  Description: .
+//  Description: Concrete class for Circular Adjacent Neighborhood structure.
 //
 //  Revision: 05/05/2019 
 //------------------------------------------------------------------------------
@@ -65,8 +68,8 @@ class CCircularAdjacentNeighbor : public CNeighborhoobStrategy
 {
 	public:
 		//--- Constructor and destructor ---//
-		CCircularAdjacentNeighbor			  ( void );
-		~CCircularAdjacentNeighbor		  ( void );
+		 CCircularAdjacentNeighbor ( void );
+		~CCircularAdjacentNeighbor ( void );
 
 		//---  ---//
 		virtual int Cardinality				  ( void );
@@ -74,9 +77,9 @@ class CCircularAdjacentNeighbor : public CNeighborhoobStrategy
 };
 
 //------------------------------------------------------------------------------
-//	ClassName: 
+//	ClassName: CLinearNoAdjacentNeighbor
 //
-//  Description: .
+//  Description: Concrete class for Linear No-adjacent Neighborhood structure.
 //
 //  Revision: 07/05/2019 
 //------------------------------------------------------------------------------
@@ -93,7 +96,7 @@ class CLinearNoAdjacentNeighbor : public CNeighborhoobStrategy
 
 	public:
 		//--- Constructor and destructor ---//
-		CLinearNoAdjacentNeighbor  ( void );
+		 CLinearNoAdjacentNeighbor ( void );
 		~CLinearNoAdjacentNeighbor ( void );
 
 		//---  ---//

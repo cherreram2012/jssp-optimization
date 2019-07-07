@@ -234,7 +234,7 @@ void main (void)
 				fprintf(file, "Operaciones que recirculan: %d\n\n", Inst.Recirc.tRecirc);
 			}
 			Graph->ApplyIBUIT(false);
-
+			
 			genome.length			(Inst.Size.Piece + Inst.Recirc.tRecirc);
 			genome.evaluator	(n_Fitness);
 			genome.initializer(n_Initializer);

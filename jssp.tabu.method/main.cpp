@@ -1,6 +1,7 @@
-#include <stdio.h>
-#include <conio.h>
+#include "iostream"
 #include "../jssp.model/CHndFile.h"
+
+using namespace std;
 
 void main (void)
 {
@@ -8,9 +9,9 @@ void main (void)
 	int P, M;
 
 	A.SetPath("datafile\\JSSP\\jobshop\\4x4_1.txt");
-	printf("FILE: %s\n\n", A.GetPath());
 	A.ReadInstanceSize(&P, &M);	
+	cout << "FILE: " << A.GetPath() << endl << endl;
 
-	printf("METODO BRKGA Nuevo\n");	
-	_getch();
+	cout << "METODO DE BUSQUEDA TABU" << endl;
+	//system("pause");
 }
